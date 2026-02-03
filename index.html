@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffd6e8, #ffeaf4, #ffffff);
+      overflow: hidden;
+      padding: 20px;
+      position: relative;
+    }
+
+    .heart {
+      position: absolute;
+      opacity: 0.25;
+      animation: floatUp linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(50px); opacity: 0; }
+      15% { opacity: 0.25; }
+      100% { transform: translateY(-120vh); opacity: 0; }
+    }
+
+    .card {
+      width: min(460px, 95vw);
+      padding: 34px 28px;
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 45, 117, 0.2);
+      box-shadow: 0 16px 55px rgba(0, 0, 0, 0.18);
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ff2d75;
+      background: rgba(255, 45, 117, 0.1);
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      font-size: 30px;
+      color: #ff2d75;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      color: #333;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .buttons {
+      position: relative;
+      height: 130px;
+      margin-top: 8px;
+    }
+
+    button {
+      width: 210px;
+      padding: 13px 18px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      transition: 0.15s ease;
+      user-select: none;
+    }
+
+    #yesBtn {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ff2d75, #ff6aa2);
+      color: white;
+      box-shadow: 0 12px 25px rgba(255, 45, 117, 0.35);
+      z-index: 5;
+    }
+
+    #yesBtn:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    /* ✅ No button is now FREE to move anywhere on screen */
+    #noBtn {
+      position: fixed;  /* important */
+      left: 50%;
+      top: 58%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.95);
+      border: 2px solid rgba(255, 45, 117, 0.35);
+      color: #ff2d75;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      z-index: 9999;
+    }
+
+    .msg {
+      transition: opacity 0.25s ease;
+      margin-top: 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #ff2d75;
+      min-height: 20px;
+    }
+
+    .small {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card" id="card">
+    <div class="tag">💌 Special Question</div>
+    <h1>💖 Anku baal ❤️</h1>
+    <p>I love you bol do..... 💘</p>
+
+    <div class="buttons">
+      <button id="yesBtn">I love you Dabbuuu! ❤️</button>
+    </div>
+
+    <div class="msg" id="msg">Try clicking “No”… if you can 😌💘</div>
+    <div class="small">Made with love, not choices 😭❤️</div>
+  </div>
+
+  <!-- ✅ No button is outside card, it can run anywhere -->
+  <button id="noBtn">No 😒</button>
+
+  <script>
+    // Smooth message variables
+    let lastMsgTime = 0;
+    const MSG_COOLDOWN = 450;
+
+    // Floating hearts
+    const hearts = ["💗","💖","💕","💘","💝","💞","❤️"];
+    for (let i = 0; i < 25; i++) {
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.innerText = hearts[Math.floor(Math.random() * hearts.length)];
+      h.style.left = Math.random() * 100 + "vw";
+      h.style.fontSize = (14 + Math.random() * 22) + "px";
+      h.style.animationDuration = (4 + Math.random() * 6) + "s";
+      h.style.animationDelay = (Math.random() * 3) + "s";
+      document.body.appendChild(h);
+    }
+
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const msg = document.getElementById("msg");
+    const card = document.getElementById("card");
+
+    const messages = [
+      "This option is not available 😌",
+      "Nice try 😏💘",
+      "No is banned 🚫😂",
+      "Only YES works here 💖",
+      "Wrong button madam 😭💕"
+    ];
+
+    function escapeNo() {
+      // ✅ full screen random position (safe edges)
+      const padding = 20;
+
+      const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+      const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+      const x = Math.random() * maxX + padding;
+      const y = Math.random() * maxY + padding;
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+      noBtn.style.transform = "translate(0,0)";
+
+      // ✅ smooth message update (cooldown)
+      const now = Date.now();
+      if (now - lastMsgTime < MSG_COOLDOWN) return;
+      lastMsgTime = now;
+
+      msg.style.opacity = "0";
+      setTimeout(() => {
+        msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+        msg.style.opacity = "1";
+      }, 150);
+    }
+
+    // Super fast escape
+    noBtn.addEventListener("mousemove", escapeNo);
+    noBtn.addEventListener("mouseenter", escapeNo);
+    noBtn.addEventListener("touchstart", escapeNo);
+
+    // If click somehow happens
+    noBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      escapeNo();
+    });
+
+    // YES click success
+    yesBtn.addEventListener("click", () => {
+      noBtn.remove(); // ✅ remove NO button completely after YES
+
+      card.innerHTML = `
+        <div class="tag">✅ Accepted</div>
+        <h1>Yayyy 😍💖</h1>
+        <p style="font-size:20px;font-weight:800;color:#ff2d75;margin-top:10px;">
+          Mai itni jaldi nhi bolunga😂😂 💘
+        </p>
+        <p class="small">Now you can’t escape me 😌❤️</p>
+      `;
+    });
+  </script>
+
+</body>
+</html>
+
